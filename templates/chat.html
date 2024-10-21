@@ -1,0 +1,557 @@
+<html lang="en-us" q:render="ssr" q:container="paused" q:version="0.103.0" q:base="/home/build/" q:locale>
+<title q:head>ai-companion</title>
+
+
+<head q:head>
+  <meta charSet="utf-8" q:head>
+  <meta charSet="utf-8" q:head>
+  <meta name="viewport" content="width=device-width" q:head>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+  <link rel="stylesheet" href="../static/chat.css">
+  <link rel="icon"
+    href="../static/img/violet_logo.png"
+    q:head>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <!-- Add the audio element here -->
+ 
+  <!-- <button > -->
+  <div class="micBtnAndTextArea">
+    <i id="recognitionButton" class="material-symbols-outlined">mic</i>
+    <!-- <div class="currentWords"></div> -->
+    <input type="text" placeholder="Type here..." id="transcribedWords" class="currentWords">
+    <i id="SendTextButton" class="material-symbols-outlined" onclick="handleSendText()">send</i>
+  </div>
+  <!-- </button> -->
+  <div class="header" q:id="8">
+    <div class="container-lg">
+    
+    </div>
+    
+  </div>
+
+  <!-- <a href="/" class="home-btn" q:key="gf_0">
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="#800080" 
+      stroke-width="2.5" 
+      stroke-linecap="round" 
+      stroke-linejoin="round" 
+      width="64" 
+      height="64" 
+      style="filter: drop-shadow(0px 0px 15px #800080);">
+    <path d="M4 12l8-8 8 8" />
+    <path d="M8 21V12h8v9" />
+    <path d="M6 21h12" />
+  </svg>
+        
+  </a> -->
+  <div class='chatbox__user-list-width100 justify-center items-center'>
+    <i class="material-symbols-outlined chatbox__user-list__icon text-violet-500 hover:text-violet-100 hover:cursor-pointer" id="expandSeed">add_circle</i>
+  </div>
+  
+  <div class=""></div>
+
+  <!-- <div class='container' ng-cloak ng-app="chatApp"> -->
+  <div class='chatbox' ng-controller="MessageCtrl as chatMessage">
+    <div class="container_messages" id="messages">
+      <div class="chatbox__messages">
+        <div class="chatbox__messages__user-message">
+          <div class="chatbox__messages__user-message--ind-message">
+            <p class="name">
+              <span class="botgif"></span>
+              <span class="AI-Product-Name">Assistant</span>
+            </p>
+            <br />
+            <span class="message">Hi! I'm your Assistant :)! Hold the spacebar to speak with me</span>
+          </div>
+        </div>
+      </div>
+      <span class="material-symbols-outlined moveToBottomBtn" onclick="scrollToBottom()">expand_more</span>
+    </div>
+  </div>
+  <!-- </div> -->
+
+
+<!-- Modal Background Overlay -->
+<div id="seedModal" onclick="closeModalOnOutsideClick(event)" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center z-50">
+  <!-- Modal Content -->
+  <div class="text-white rounded-lg shadow-lg w-11/12 md:w-1/2 max-h-screen overflow-y-auto transform transition-transform duration-300 scale-95" style="background: radial-gradient(circle at top left, #4e3198, #150e1a, #5e2696);">
+
+    <!-- Modal Header -->
+    <div class="flex justify-between items-center border-b border-purple-400 px-4 py-2">
+      <!-- Toggle between Template and Custom Prompt -->
+      <div class="flex items-center space-x-4">
+        <button id="templateTab" class="text-white font-bold focus:outline-none">Template</button>
+        <button id="customTab" class="text-purple-300 focus:outline-none">Custom Prompt</button>
+      </div>
+      <button id="closeModal" class="text-white hover:text-purple-300 focus:outline-none">&times;</button>
+    </div>
+    <!-- Modal Body -->
+    <div id="templateContent" class="px-4 py-2">
+      <!-- Template Form -->
+      <form id="seedForm" class="space-y-4">
+        <!-- Prompt -->
+        <div>
+          <label class="block text-sm font-medium">Prompt</label>
+          <textarea name="prompt" class="w-full bg-purple-950 mt-1 border border-purple-700 rounded px-2 py-1 resize-none focus:outline-none transition duration-200 ease-in-out focus:bg-purple-800 focus:ring-2 focus:ring-purple-500" placeholder="Describe the scene or elements you want included"></textarea>
+        </div>
+        <!-- Setting -->
+        <div>
+          <label class="block text-sm font-medium">Setting</label>
+          <input type="text" name="setting" class="w-full bg-purple-950 mt-1 border border-purple-700 rounded px-2 py-1 focus:outline-none transition duration-200 ease-in-out focus:bg-purple-800 focus:ring-2 focus:ring-purple-500" placeholder="e.g., living room, beach, futuristic city">
+        </div>
+        <!-- Quality -->
+        <div>
+          <label class="block text-sm font-medium">Quality</label>
+          <input type="text" name="quality" class="w-full bg-purple-950 mt-1 border border-purple-700 rounded px-2 py-1 focus:outline-none transition duration-200 ease-in-out focus:bg-purple-800 focus:ring-2 focus:ring-purple-500" placeholder="e.g., shot on iPhone, Nikon D850, watercolor painting">
+        </div>
+        <!-- Zoom -->
+        <div>
+          <label class="block text-sm font-medium">Zoom</label>
+          <input type="text" name="zoom" class="w-full bg-purple-950 mt-1 border border-purple-700 rounded px-2 py-1 focus:outline-none transition duration-200 ease-in-out focus:bg-purple-800 focus:ring-2 focus:ring-purple-500" placeholder="e.g., ultrawide, wide, close-up">
+        </div>
+        <!-- Scene Mood -->
+        <div>
+          <label class="block text-sm font-medium">Scene Mood</label>
+          <input type="text" name="scene_mood" class="w-full bg-purple-950 mt-1 border border-purple-700 rounded px-2 py-1 focus:outline-none transition duration-200 ease-in-out focus:bg-purple-800 focus:ring-2 focus:ring-purple-500" placeholder="e.g., dynamic, serene, joyful">
+        </div>
+        <!-- Companion Emotion -->
+        <div>
+          <label class="block text-sm font-medium">Companion Emotion</label>
+          <input type="text" name="companion_emotion" class="w-full bg-purple-950 mt-1 border border-purple-700 rounded px-2 py-1 focus:outline-none transition duration-200 ease-in-out focus:bg-purple-800 focus:ring-2 focus:ring-purple-500" placeholder="e.g., pleased, excited, contemplative">
+        </div>
+        <!-- Emotion Intensity -->
+        <div>
+          <label class="block text-sm font-medium">Emotion Intensity (0-100%)</label>
+          <input type="range" name="emotion_intensity" min="0" max="100" value="50" class="w-full">
+          <!-- Display Current Value -->
+          <div id="emotionIntensityValue" class="text-sm text-right">50%</div>
+        </div>
+        <!-- NSFW Toggle -->
+        <div class="flex items-center">
+          <input type="checkbox" name="nsfw" id="nsfwToggle" class="form-checkbox h-5 w-5 text-purple-600">
+          <label for="nsfwToggle" class="ml-2 text-sm font-medium">NSFW</label>
+        </div>
+        <!-- Generate Button -->
+        <div class="flex justify-end">
+          <button type="submit" class="bg-purple-700 hover:bg-purple-600 px-4 py-2 rounded focus:outline-none">Generate</button>
+        </div>
+      </form>
+    </div>
+    <!-- Custom Prompt Content -->
+    <div id="customContent" class="px-4 py-2 hidden">
+      <form id="customPromptForm" class="space-y-4">
+        <!-- Custom Prompt Textarea -->
+        <div>
+          <label class="block text-sm font-medium">Custom Prompt</label>
+          <textarea name="custom_prompt" class="w-full bg-purple-950 mt-1 border border-purple-700 rounded px-2 py-1 resize-none focus:outline-none transition duration-200 ease-in-out focus:bg-purple-800 focus:ring-2 focus:ring-purple-500" rows="6" placeholder="Enter your custom prompt here"></textarea>
+        </div>
+        <!-- Generate Button -->
+        <div class="flex justify-end">
+          <button type="submit" class="bg-purple-700 hover:bg-purple-600 px-4 py-2 rounded focus:outline-none">Generate</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<script type="text/javascript" src="../static/modal.js"></script>
+
+  <div id="top_emotions"></div>
+
+
+  <script type="text/javascript">
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    var lock = false;
+    var recognition = new window.webkitSpeechRecognition();
+    var messages = document.querySelector('.container_messages');
+    var userMsg = document.querySelector('.chatbox__messages');
+    function scrollToBottom() {
+      var container = document.querySelector('.container_messages');
+      messages.scrollTop = messages.scrollHeight;
+    }
+    function showHideScrollButton() {
+      var container = document.querySelector('.container_messages');
+      var scrollButton = document.querySelector('.moveToBottomBtn');
+
+      if (container.scrollHeight > container.clientHeight) {
+        scrollButton.style.display = 'block';
+      } else {
+        scrollButton.style.display = 'none';
+      }
+    }
+    // Call the function initially to check the scrollbar presence
+    showHideScrollButton();
+
+
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    var isInputFocused = false;
+    document.getElementById('transcribedWords').addEventListener('focus', function () {
+      isInputFocused = true;
+    });
+    document.getElementById('transcribedWords').addEventListener('blur', function () {
+      isInputFocused = false;
+    });
+    // Start voice recognition when spacebar is pressed
+    document.onkeydown = function (event) {
+      event = event || window.event;
+      var transcribedWordsInput = document.getElementById('transcribedWords');
+      var seedModal = document.getElementById('seedModal');
+      if (event.keyCode == 32 && isInputFocused == false && !recognition.recognizing && seedModal.classList.contains('hidden')) {
+        console.log("Spacebar pressed. Starting recognition...");
+        if (audio.play()) {
+          audio.pause()
+        }
+        // recognition.start();
+        // console.log('Voice recognition activated. Try speaking into the microphone.');
+      }
+    };
+
+    // Stop voice recognition when spacebar is released
+    document.onkeyup = function (event) {
+      event = event || window.event;
+      var seedModal = document.getElementById('seedModal');
+      if (event.keyCode == 32 && isInputFocused == false && seedModal.classList.contains('hidden')) {
+        recognition.stop();
+        console.log('Voice recognition deactivated.');
+      }
+    };
+
+
+    const handleSendText = () => {
+      if (!lock) {
+        var currentUserMessage = document.createElement('div');
+        currentUserMessage.className = "chatbox__messages";
+        var chatbotimg = document.getElementsByClassName("botgif")
+        var transcribedWordsInput = document.getElementById('transcribedWords');
+        // console.log("Transcribed Words Input Value:", transcribedWordsInput.value);
+        if (transcribedWordsInput.value != "") {
+          messages.innerHTML += '<div class="messagesUser newUserChat"><p class="You">You</p><br/><span class="userMsg">' + transcribedWordsInput.value + '</span></div>';
+        }
+        setTimeout(() => {
+          transcribedWordsInput.value = ""
+        }, 100)
+
+        var newMessageElement = messages.querySelector('.newUserChat');
+        newMessageElement.addEventListener('animationend', function () {
+          newMessageElement.classList.remove('newUserChat');
+          scrollToBottom(); // Scroll to bottom after adding new user message
+          // Show/hide the "expand_more" button after the scroll operation
+          setTimeout(function () {
+            showHideScrollButton();
+          }, 100);
+        });
+
+        // console.log(currentUserMessage)
+        // if (currentUserMessage.innerHTML !== '') {
+        //   messages.appendChild(currentUserMessage);
+        // }
+        // console.log(transcribedWordsInput.value)
+        if (transcribedWordsInput.value != "") {
+          interimResult = '';
+          lock = true;
+         
+          $.ajax({
+            type: 'POST',
+            url: '/sendmessage',
+            data: JSON.stringify({ "out": transcribedWordsInput.value }),
+            contentType: 'application/json',
+            success: function (response) {
+              var newMessage = '<div class="chatbox__messages newVioletChat"><div class="chatbox__messages__user-message"><div class="chatbox__messages__user-message--ind-message"><p class="name"><span class="botgif"></span><span class="AI-Product-Name">Assistant</span></p><br/><span class="message">' + response + '</span></div></div></div>';
+              messages.innerHTML += newMessage;
+              // messages.innerHTML += '<div class="chatbox__messages newVioletChat"><div class="chatbox__messages__user-message"><div class="chatbox__messages__user-message--ind-message"><p class="name"><span>Violet</span><span class="botgif"></span></p><br/><span class="message">' + response + '</span></div></div></div>';
+              const shouldSpeak = {{ speak|tojson }};
+              lock = !TextToSpeech(response, shouldSpeak);
+              // Wait for the animation to complete before removing the class
+              var newMessageElement = messages.querySelector('.newVioletChat');
+              newMessageElement.addEventListener('animationend', function () {
+                newMessageElement.classList.remove('newVioletChat');
+                // Scroll to bottom after adding new content to messages container
+                scrollToBottom();
+                // Show/hide the "expand_more" button after the scroll operation
+                setTimeout(function () {
+                  showHideScrollButton();
+                }, 100);
+              });
+              var chatboxMessages = document.querySelector('.chatbox__messages');
+            
+              //newMessageElement.style.backgroundImage = 'linear-gradient(326deg, #1f0120 0%, #290555 74%)';
+             
+            },
+            error: function (error) {
+              console.error(error);
+            }
+          });
+
+        }
+
+        if (interimResult.includes("stop")) {
+          recognition.stop();
+          lock = true;
+        }
+      }
+    }
+    window.addEventListener('keypress', function (event) {
+      //enter key was pressed
+      if (event.keyCode === 13) {
+        handleSendText();
+      }
+    });
+
+    recognition.onresult = function (event) {
+      if (!lock && isInputFocused == false) {
+        var currentUserMessage = document.createElement('div');
+        currentUserMessage.className = "chatbox__messages";
+
+        for (var i = event.resultIndex; i < event.results.length; ++i) {
+          var chatbotimg = document.getElementsByClassName("botgif")
+          var transcribedWordsInput = document.getElementById('transcribedWords');
+          // console.log("Transcribed Words Input Value:", transcribedWordsInput.value);
+          transcribedWordsInput.value = (event.results[i][0].transcript).slice(0, 100) + "...";
+          setTimeout(() => {
+            transcribedWordsInput.value = ""
+          }, 2000)
+
+          if (event.results[i].isFinal) {
+            messages.innerHTML += '<div class="messagesUser newUserChat"><p class="You">You</p><br/><span class="userMsg">' + event.results[i][0].transcript + '</span></div>';
+          }
+          var newMessageElement = messages.querySelector('.newUserChat');
+          newMessageElement.addEventListener('animationend', function () {
+            newMessageElement.classList.remove('newUserChat');
+            scrollToBottom(); // Scroll to bottom after adding new user message
+            // Show/hide the "expand_more" button after the scroll operation
+            setTimeout(function () {
+              showHideScrollButton();
+            }, 100);
+          });
+        }
+        // if (currentUserMessage.innerHTML !== '') {
+        //   messages.appendChild(currentUserMessage);
+        // }
+        if (event.results[event.results.length - 1].isFinal) {
+          interimResult = '';
+          lock = true;
+          // Data to be sent
+          // var requestData = { "out": transcribedWordsInput.value };
+          // console.log("Sending data:", requestData);
+          $.ajax({
+            type: 'POST',
+            url: '/sendmessage',
+            data: JSON.stringify({ "out": transcribedWordsInput.value }),
+            contentType: 'application/json',
+            success: function (response) {
+              // var newMessage = '<div class="chatbox__messages newVioletChat"><div class="chatbox__messages__user-message"><div class="chatbox__messages__user-message--ind-message"><p class="name"><span class="botgif"></span><span class="AI-Product-Name">Violet</span></p><br/><span class="message">' + response + '</span></div></div></div>';
+              // var selectedOption = document.getElementById('modelSelect').value
+            
+              var newMessage = '<div class="chatbox__messages newVioletChat"><div class="chatbox__messages__user-message"><div class="chatbox__messages__user-message--ind-message"><p class="name"><span class="botgif"></span><span class="AI-Product-Name">Violet</span></p><br/><span class="message">' + response + '</span></div></div></div>';
+              
+              messages.innerHTML += newMessage;
+              // messages.innerHTML += '<div class="chatbox__messages newVioletChat"><div class="chatbox__messages__user-message"><div class="chatbox__messages__user-message--ind-message"><p class="name"><span>Violet</span><span class="botgif"></span></p><br/><span class="message">' + response + '</span></div></div></div>';
+              const shouldSpeak = {{ speak|tojson }};
+              lock = !TextToSpeech(response, shouldSpeak);
+              // Wait for the animation to complete before removing the class
+              var newMessageElement = messages.querySelector('.newVioletChat');
+              newMessageElement.addEventListener('animationend', function () {
+                newMessageElement.classList.remove('newVioletChat');
+                // Scroll to bottom after adding new content to messages container
+                scrollToBottom();
+                // Show/hide the "expand_more" button after the scroll operation
+                setTimeout(function () {
+                  showHideScrollButton();
+                }, 100);
+              });
+              var chatboxMessages = document.querySelector('.chatbox__messages');
+
+              newMessageElement.style.backgroundImage = 'linear-gradient(326deg, #1f0120 0%, #290555 74%)';
+              chatboxMessages.classList.remove('scarlett');
+              chatboxMessages.classList.add('violet');
+            
+              // Uncomment the following lines if you want to restart recognition after a response is received
+              /*
+              setTimeout(function() {
+                  if (!lock) {
+                      recognition.start();
+                  }
+              }, 1);
+              */
+            },
+            error: function (error) {
+              console.error(error);
+            }
+          });
+
+        }
+
+        if (interimResult.includes("stop")) {
+          recognition.stop();
+          lock = true;
+        }
+      }
+    };
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    recognition.onerror = function () {
+      console.log('Voice recognition error. Try again.');
+    };
+
+    recognition.onend = function () {
+      interimResult = '';
+    };
+
+    document.addEventListener('keydown', function (event) {
+      var seedModal = document.getElementById('seedModal');
+      if (event.code == 'Space' && isInputFocused == false && !recognition.recognizing && seedModal.classList.contains('hidden')) {  // Check if Spacebar is pressed
+        event.preventDefault();
+        // Start the recognition
+        if (!recognition.recognizing) {
+          console.log("Spacebar pressed. Starting recognition...");
+          recognition.recognizing = true;
+          recognition.start();
+          // Show the button
+          document.getElementById('recognitionButton').style.display = 'flex';
+          document.getElementById('recognitionButton').style.background = "#4CAF50";
+        }
+      }
+    });
+
+    document.addEventListener('keyup', function (event) {
+      var seedModal = document.getElementById('seedModal');
+      if (event.code == 'Space' && isInputFocused == false && recognition.recognizing && seedModal.classList.contains('hidden')) {  // Check if Spacebar is released
+        event.preventDefault();
+        // Stop the recognition
+        if (recognition.recognizing) {
+          console.log("Spacebar released. Stopping recognition...");
+          recognition.recognizing = false;
+          recognition.stop();
+          document.getElementById('recognitionButton').style.background = "#1a301b";
+        }
+      }
+    });
+    var recognitionButton = document.getElementById('recognitionButton');
+
+    document.addEventListener('keydown', function (event) {
+      var seedModal = document.getElementById('seedModal');
+      if (event.code === 'Space' && isInputFocused == false && !recognition.recognizing && seedModal.classList.contains('hidden')) { // Check if Spacebar is pressed
+        event.preventDefault();
+        // Change the microphone icon to the GIF file
+        recognitionButton.innerHTML = '<i class="material-symbols-outlined">hearing</i>';
+        recognitionButton.style.backgroundColor = "#4CAF50"
+      }
+    });
+
+    document.addEventListener('keyup', function (event) {
+      var seedModal = document.getElementById('seedModal');
+      if (event.code === 'Space' && isInputFocused == false && recognition.recognizing && seedModal.classList.contains('hidden')) { // Check if Spacebar is released
+        event.preventDefault();
+        // Show the microphone icon again
+        recognitionButton.innerHTML = '<i class="material-symbols-outlined">mic</i>';
+        recognitionButton.style.backgroundColor = "#1a301b"
+      }
+    });
+
+    ///for mobile view's speaking method
+
+    var recognitionButton = document.getElementById('recognitionButton');
+    var recognitionStarted = false;
+
+    // Function to check if the window width is less than or equal to 600px
+
+    // function isMobile() {
+    //   return window.innerWidth <= 600;
+    // }
+    if (window.innerWidth <= 600) {
+      recognitionButton.addEventListener('touchstart', function (event) {
+        event.preventDefault();
+        if (!recognitionStarted) {
+          console.log("Starting recognition...");
+          recognition.start();
+          recognitionStarted = true;
+          recognitionButton.innerHTML = '<i class="material-symbols-outlined">hearing</i>';
+          recognitionButton.style.backgroundColor = "#4CAF50";
+        }
+      });
+
+      recognitionButton.addEventListener('touchend', function (event) {
+        event.preventDefault();
+        if (recognitionStarted) {
+          console.log("Stopping recognition...");
+          recognition.stop();
+          recognitionStarted = false;
+          recognitionButton.innerHTML = '<i class="material-symbols-outlined">mic</i>';
+          recognitionButton.style.backgroundColor = "#1a301b";
+        }
+      });
+    }
+
+
+  </script>
+  <script type="text/javascript">
+
+    function TextToSpeech(message, shouldSpeak) {
+      if (!shouldSpeak) {
+        return true;
+      }
+
+      var ELEVEN_LABS_API_KEY = {{ api_key|tojson }};
+      var sVoiceId = {{ voiceid|tojson }};
+
+      var oHttp = new XMLHttpRequest();
+      oHttp.open("POST", "https://api.elevenlabs.io/v1/text-to-speech/" + sVoiceId);
+      oHttp.setRequestHeader("Accept", "audio/mpeg");
+      oHttp.setRequestHeader("Content-Type", "application/json");
+      oHttp.setRequestHeader("xi-api-key", ELEVEN_LABS_API_KEY);
+
+      oHttp.onload = function () {
+        console.log("Response received");
+        if (oHttp.readyState === 4) {
+          var audioBlob = new Blob([this.response], { type: "audio/mpeg" });
+          var audioURL = URL.createObjectURL(audioBlob);
+          var audio = new Audio();
+          audio.src = audioURL;
+          audio.play();
+        }
+      };
+
+      var data = {
+        text: message,
+        voice_settings: { stability: 0.6, similarity_boost: 0.5 } //0 - 1
+      };
+
+      oHttp.responseType = "arraybuffer";
+      oHttp.send(JSON.stringify(data));
+      return true;
+    }
+  </script>
+
+
+<script type="text/javascript" src="api.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"
+    integrity="sha512-2rNj2KJ+D8s1ceNasTIex6z4HWyOnEYLVC3FigGOmyQCZc2eBXKgOxQmo3oKLHyfcj53uz4QMsRCWNbLd32Q1g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"
+    integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  
+</body>
+
+</html>
