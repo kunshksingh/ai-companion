@@ -1,4 +1,8 @@
 from openai import OpenAI
+from decouple import config
+from dotenv import load_dotenv
+
+load_dotenv()
 client = OpenAI()
 
 class GPT_Engine:
@@ -6,32 +10,16 @@ class GPT_Engine:
 
      messages=[
     {
-      "role": "system",
-      "content": [
-        {
-          "type": "text",
-          "text": "You are awesome"
-        }
-      ]
-    },
-    {
       "role": "user",
       "content": [
         {
           "type": "text",
-          "text": "Hello how are you?"
+          "text": "Hello, how are you?"
         }
       ]
     },
-    {
-      "role": "assistant",
-      "content": [
-        {
-          "type": "text",
-          "text": "Hello! I'm just a computer program, so I don't have feelings, but I'm here and ready to help you with anything you need. How can I assist you today?"
-        }
-      ]
-
+ 
+   
     '''
     def __init__(self):
         self.messages = []
@@ -54,7 +42,7 @@ class GPT_Engine:
     
     def generate_response(self, params={ 
                                 "temperature": 1, 
-                                "max_tokens": 150, 
+                                "max_tokens": 256, 
                                 "top_p": 1, 
                                 "frequency_penalty": 0, 
                                 "presence_penalty": 0, 
@@ -74,6 +62,7 @@ class GPT_Engine:
             stop=params["stop"],
             response_format=params["response_format"]
         )
+        self.add_message(response.choices[0].message.content, message_role="assistant")
     def clear(self):
         self.messages = []
 
