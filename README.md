@@ -9,9 +9,10 @@ Open source AI companion with voice to voice (check), text to text (check), and 
 
 1. Create a .env file in both templates/root folders
 2. For .env in `templates/`, add `ELEVEN_LABS_API_KEY` and `OPENAI_API_KEY`
-3. For .env in root, add `ELEVEN_LABS_API_KEY`,
-`OPENAI_API_KEY`
-`HUME_API_KEY` and 
+3. For .env in root, add `OPENAI_API_KEY`,
+`HUME_API_KEY`,
+`FAL_KEY`
+`ELEVEN_LABS_API_KEY`,
 `VOICE_ID`. The voice ID I am using is `'2iu0hNtfcnLuxyndzwxv'`
 
 
